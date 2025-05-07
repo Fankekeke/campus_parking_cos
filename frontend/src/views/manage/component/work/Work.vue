@@ -15,7 +15,7 @@
     <br/>
     <br/>
     <a-row :gutter="30" v-if="userInfo != null">
-      <a-col :span="6">
+      <a-col :span="8">
         <a-card :bordered="false">
           <span slot="title">
             <a-icon type="user" style="margin-right: 10px" />
@@ -29,9 +29,11 @@
             </div>
             <div style="float: left;margin-left: 20px;margin-top: 8px">
               <span style="font-size: 14px;font-family: SimHei">电话：{{ userInfo.phone == null ? '- -' : userInfo.phone }}</span>
+              <br/>
+              <br/>
+              <span style="font-size: 14px;font-family: SimHei">邮箱：{{ userInfo.email == null ? '- -' : userInfo.email }}</span>
             </div>
             <div style="float: left;margin-left: 20px;margin-top: 8px">
-              <span style="font-size: 14px;font-family: SimHei">邮箱：{{ userInfo.email == null ? '- -' : userInfo.email }}</span>
             </div>
           </div>
         </a-card>

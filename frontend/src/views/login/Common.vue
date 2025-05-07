@@ -3,7 +3,7 @@
     <div class="content" style="margin: 0 auto">
       <div class="top">
         <div class="header">
-          <span class="title" style="color: white">停车场管理系统</span>
+          <span class="title" style="color: black">停车场管理系统</span>
         </div>
         <div class="desc"></div>
       </div>
@@ -48,8 +48,9 @@ export default {
     flex-direction: column;
     height: 100vh;
     overflow: auto;
-    background: rgb(234, 234, 234) url(../../../static/img/house.jpg) no-repeat center ;
-    background-size: cover;
+    background: url(../../../static/img/house.jpg) no-repeat center ;
+    background-color: white;
+    background-size: contain;
     .content {
       padding: 32px 0;
       flex: 1;
