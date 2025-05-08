@@ -222,6 +222,13 @@ public class ParkOrderInfoController {
         // 订单信息
         parkOrderInfo.setCode("ORD-" + System.currentTimeMillis());
         parkOrderInfo.setPrice(spaceInfo.getPrice());
+        if (StrUtil.isEmpty(userInfo.getType()) || "1".equals(userInfo.getType())) {
+            parkOrderInfo.setPrice(spaceInfo.getPrice());
+        } else if ("2".equals(userInfo.getType())){
+            parkOrderInfo.setPrice(spaceInfo.getTutorPrice());
+        } else if ("3".equals(userInfo.getType())) {
+            parkOrderInfo.setPrice(spaceInfo.getUserPrice());
+        }
         parkOrderInfo.setStatus("0");
         parkOrderInfo.setStartDate(DateUtil.formatDateTime(new Date()));
         return R.ok(parkOrderInfoService.save(parkOrderInfo));

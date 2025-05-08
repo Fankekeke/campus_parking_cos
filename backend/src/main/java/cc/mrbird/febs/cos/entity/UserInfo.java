@@ -65,4 +65,9 @@ public class UserInfo implements Serializable {
 
     private Integer userId;
 
+    /**
+     * 用户类型 1.普通用户 2.教师 3.学生
+     */
+    private String type;
+
 }

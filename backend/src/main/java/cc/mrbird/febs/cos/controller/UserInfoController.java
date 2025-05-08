@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
@@ -178,8 +179,13 @@ public class UserInfoController {
      * @return 结果
      */
     @PostMapping
-    public R save(UserInfo userInfo) {
-        return R.ok(userInfoService.save(userInfo));
+    @Transactional(rollbackFor = Exception.class)
+    public R save(UserInfo userInfo) throws Exception {
+        // 添加账户信息
+        userInfo.setCode("UR-" + System.currentTimeMillis());
+        userInfo.setCreateDate(DateUtil.formatDate(new Date()));
+        userService.registUser(userInfo.getCode(), "1234qwer", userInfo);
+        return R.ok(true);
     }
 
     /**

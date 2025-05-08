@@ -5,7 +5,9 @@ import cc.mrbird.febs.common.domain.QueryRequest;
 import cc.mrbird.febs.common.service.CacheService;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.common.utils.MD5Util;
+import cc.mrbird.febs.cos.entity.MemberInfo;
 import cc.mrbird.febs.cos.entity.UserInfo;
+import cc.mrbird.febs.cos.service.IMemberInfoService;
 import cc.mrbird.febs.cos.service.IUserInfoService;
 import cc.mrbird.febs.system.dao.UserMapper;
 import cc.mrbird.febs.system.dao.UserRoleMapper;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +51,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserManager userManager;
     @Autowired
     private IUserInfoService userInfoService;
+    @Autowired
+    private IMemberInfoService memberInfoService;
 
 
     @Override
@@ -182,8 +187,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userInfo.setName(name);
         userInfo.setEmail(email);
         userInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
-        userInfo.setCode("U-" + System.currentTimeMillis());
+        userInfo.setCode("UR-" + System.currentTimeMillis());
         userInfo.setUserId(Math.toIntExact(user.getUserId()));
+        userInfo.setType("1");
         userInfoService.save(userInfo);
 
         UserRole ur = new UserRole();
@@ -196,6 +202,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 将用户相关信息保存到 Redis中
         userManager.loadUserRedisCache(user);
 
+    }
+
+    /**
+     * 注册用户
+     *
+     * @param username 用户名
+     * @param password 密码
+     */
+    @Override
+    public void registUser(String username, String password, UserInfo userInfo) throws Exception {
+        User user = new User();
+        user.setPassword(MD5Util.encrypt(username, password));
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setStatus(User.STATUS_VALID);
+        user.setSsex(User.SEX_UNKNOW);
+        user.setAvatar(User.DEFAULT_AVATAR);
+        user.setDescription("注册用户");
+        this.save(user);
+
+        userInfo.setUserId(Math.toIntExact(user.getUserId()));
+        userInfoService.save(userInfo);
+
+        UserRole ur = new UserRole();
+        ur.setUserId(user.getUserId());
+        ur.setRoleId(75L); // 注册用户角色 ID
+        this.userRoleMapper.insert(ur);
+
+        if ("2".equals(userInfo.getType())) {
+            // 添加教师会员信息
+            MemberInfo member = new MemberInfo();
+            member.setUserId(userInfo.getUserId());
+            member.setMemberLevel("2");
+            member.setStartDate(DateUtil.formatDateTime(new Date()));
+            member.setEndDate("2099-12-29 23:59:59");
+            member.setPrice(new BigDecimal(0));
+            member.setPayDate(DateUtil.formatDateTime(new Date()));
+            memberInfoService.save(member);
+        }
+
+        // 创建用户默认的个性化配置
+        userConfigService.initDefaultUserConfig(String.valueOf(user.getUserId()));
+        // 将用户相关信息保存到 Redis中
+        userManager.loadUserRedisCache(user);
     }
 
     @Override

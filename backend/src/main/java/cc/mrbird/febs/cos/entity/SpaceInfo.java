@@ -58,5 +58,7 @@ public class SpaceInfo implements Serializable {
      */
     private BigDecimal price;
 
+    private BigDecimal tutorPrice;
 
+    private BigDecimal userPrice;
 }
