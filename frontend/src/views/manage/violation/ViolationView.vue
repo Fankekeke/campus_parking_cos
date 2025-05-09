@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="用户详情" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="违规详情" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose" type="danger">
         关闭
@@ -7,11 +7,12 @@
     </template>
     <div style="font-size: 13px;font-family: SimHei" v-if="userData !== null">
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">用户信息</span></a-col>
-        <a-col :span="8"><b>用户编号：</b>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">违规信息</span>
+        </a-col>
+        <a-col :span="8"><b>违规编号：</b>
           {{ userData.code ? userData.code : '- -' }}
         </a-col>
-        <a-col :span="8"><b>用户名称：</b>
+        <a-col :span="8"><b>违规名称：</b>
           {{ userData.name ? userData.name : '- -' }}
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
@@ -34,7 +35,8 @@
       <br/>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">用户头像</span></a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">违规头像</span>
+        </a-col>
         <a-col :span="24">
           <a-upload
             name="avatar"
@@ -46,7 +48,7 @@
           >
           </a-upload>
           <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-            <img alt="example" style="width: 100%" :src="previewImage" />
+            <img alt="example" style="width: 100%" :src="previewImage"/>
           </a-modal>
         </a-col>
       </a-row>
@@ -58,8 +60,10 @@
 <script>
 import baiduMap from '@/utils/map/baiduMap'
 import moment from 'moment'
+
 moment.locale('zh-cn')
-function getBase64 (file) {
+
+function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -67,6 +71,7 @@ function getBase64 (file) {
     reader.onerror = error => reject(error)
   })
 }
+
 export default {
   name: 'userView',
   props: {
@@ -87,7 +92,7 @@ export default {
       }
     }
   },
-  data () {
+  data() {
     return {
       loading: false,
       fileList: [],
@@ -109,7 +114,7 @@ export default {
     }
   },
   methods: {
-    local (userData) {
+    local(userData) {
       baiduMap.clearOverlays()
       baiduMap.rMap().enableScrollWheelZoom(true)
       // eslint-disable-next-line no-undef
@@ -119,7 +124,7 @@ export default {
       // let driving = new BMap.DrivingRoute(baiduMap.rMap(), {renderOptions:{map: baiduMap.rMap(), autoViewport: true}});
       // driving.search(new BMap.Point(this.nowPoint.lng,this.nowPoint.lat), new BMap.Point(scenic.point.split(",")[0],scenic.point.split(",")[1]));
     },
-    imagesInit (images) {
+    imagesInit(images) {
       if (images !== null && images !== '') {
         let imageList = []
         images.split(',').forEach((image, index) => {
@@ -128,20 +133,20 @@ export default {
         this.fileList = imageList
       }
     },
-    handleCancel () {
+    handleCancel() {
       this.previewVisible = false
     },
-    async handlePreview (file) {
+    async handlePreview(file) {
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj)
       }
       this.previewImage = file.url || file.preview
       this.previewVisible = true
     },
-    picHandleChange ({ fileList }) {
+    picHandleChange({fileList}) {
       this.fileList = fileList
     },
-    onClose () {
+    onClose() {
       this.$emit('close')
     }
   }

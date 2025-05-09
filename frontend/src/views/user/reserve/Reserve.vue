@@ -53,7 +53,8 @@
                :scroll="{ x: 900 }"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-          <a-icon type="file-search" @click="reserveViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
+          <a-icon type="file-search" @click="reserveViewOpen(record)" title="详 情"></a-icon>
+          <a-icon type="control" theme="twoTone" @click="editStatus(record)" title="取 消" style="margin-left: 15px" v-if="record.status == 1"></a-icon>
         </template>
       </a-table>
     </div>
@@ -207,6 +208,14 @@ export default {
     this.fetch()
   },
   methods: {
+    editStatus (row) {
+      this.$put('/cos/reserve-info/editStatus', {
+        ...row
+      }).then((r) => {
+        this.$message.success('取消预约成功')
+        this.search()
+      })
+    },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },

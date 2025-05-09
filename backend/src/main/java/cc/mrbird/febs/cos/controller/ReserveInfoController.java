@@ -143,6 +143,19 @@ public class ReserveInfoController {
     }
 
     /**
+     * 修改车位预约信息状态
+     *
+     * @param reserveInfo 车位预约
+     * @return 状态
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @PutMapping("/editStatus")
+    public R editStatus(ReserveInfo reserveInfo) {
+        reserveInfoService.update(Wrappers.<ReserveInfo>lambdaUpdate().set(ReserveInfo::getStatus, "0").eq(ReserveInfo::getId, reserveInfo.getId()));
+        return R.ok(spaceStatusInfoService.update(Wrappers.<SpaceStatusInfo>lambdaUpdate().set(SpaceStatusInfo::getStatus, 0).eq(SpaceStatusInfo::getId, reserveInfo.getSpaceId())));
+    }
+
+    /**
      * 删除车位预约信息
      *
      * @param ids ids

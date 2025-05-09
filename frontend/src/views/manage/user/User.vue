@@ -385,6 +385,7 @@ export default {
       if (params.delFlag === undefined) {
         delete params.delFlag
       }
+      params.type = 1
       this.$get('/cos/user-info/page', {
         ...params
       }).then((r) => {

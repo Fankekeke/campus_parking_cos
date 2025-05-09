@@ -182,7 +182,11 @@ public class UserInfoController {
     @Transactional(rollbackFor = Exception.class)
     public R save(UserInfo userInfo) throws Exception {
         // 添加账户信息
-        userInfo.setCode("UR-" + System.currentTimeMillis());
+        if ("2".equals(userInfo.getType())) {
+            userInfo.setCode("TE-" + System.currentTimeMillis());
+        } else if ("3".equals(userInfo.getType())) {
+            userInfo.setCode("ST-" + System.currentTimeMillis());
+        }
         userInfo.setCreateDate(DateUtil.formatDate(new Date()));
         userService.registUser(userInfo.getCode(), "1234qwer", userInfo);
         return R.ok(true);

@@ -7,26 +7,18 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="车位名称"
+                label="教师编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.spaceName"/>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="车牌号码"
+                label="教师名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.vehicleNumber"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="24">
-              <a-form-item
-                label="用户名称"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.userName"/>
+                <a-input v-model="queryParams.name"/>
               </a-form-item>
             </a-col>
           </div>
@@ -53,55 +45,88 @@
                :scroll="{ x: 900 }"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-          <a-icon v-if="record.status == 0 && record.totalPrice" type="alipay" @click="pay(record)" title="支 付"></a-icon>
-          <a-icon type="control" theme="twoTone" @click="download(record)" title="下 载" style="margin-left: 15px" v-if="record.status == 1"></a-icon>
-          <a-icon type="file-search" @click="orderViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
+<!--          <a-icon type="picture" v-if="record.userImages === null" @click="face(record)" title="照 片" style="margin-right: 15px"></a-icon>-->
+          <a-icon type="file-search" @click="userViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
         </template>
       </a-table>
     </div>
-    <order-add
-      v-if="orderAdd.visiable"
-      @close="handleorderAddClose"
-      @success="handleorderAddSuccess"
-      :orderAddVisiable="orderAdd.visiable">
-    </order-add>
-    <order-edit
-      ref="orderEdit"
-      @close="handleorderEditClose"
-      @success="handleorderEditSuccess"
-      :orderEditVisiable="orderEdit.visiable">
-    </order-edit>
-    <order-view
-      @close="handleorderViewClose"
-      :orderShow="orderView.visiable"
-      :orderData="orderView.data">
-    </order-view>
+    <a-modal v-model="faceView.visiable" title="上传人脸照片">
+      <template slot="footer">
+        <a-button key="back" @click="faceView.visiable = false">
+          取消
+        </a-button>
+      </template>
+      <div style="height: 120px">
+        <a-upload
+          v-if="faceView.visiable"
+          name="avatar"
+          action="http://127.0.0.1:9527/cos/face/registered/"
+          list-type="picture-card"
+          :data="{'name': faceView.data.name, 'ownerId': faceView.data.id}"
+          :file-list="fileList"
+          @preview="handlePreview"
+          @change="picHandleChange"
+        >
+          <div v-if="fileList.length < 1">
+            <a-icon type="plus" />
+            <div class="ant-upload-text">
+              Upload
+            </div>
+          </div>
+        </a-upload>
+      </div>
+      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+        <img alt="example" style="width: 100%" :src="previewImage" />
+      </a-modal>
+    </a-modal>
+    <user-view
+      @close="handleuserViewClose"
+      :userShow="userView.visiable"
+      :userData="userView.data">
+    </user-view>
+    <user-add
+      v-if="bulletinAdd.visiable"
+      @close="handleBulletinAddClose"
+      @success="handleBulletinAddSuccess"
+      :bulletinAddVisiable="bulletinAdd.visiable">
+    </user-add>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
-import orderAdd from './OrderAdd.vue'
-import orderEdit from './OrderEdit.vue'
-import orderView from './OrderView.vue'
+import userView from './UserView.vue'
 import {mapState} from 'vuex'
 import moment from 'moment'
-import { newSpread, fixedForm, saveExcel } from '@/utils/spreadJS'
 moment.locale('zh-cn')
-
+function getBase64 (file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
+}
 export default {
-  name: 'order',
-  components: {orderAdd, orderEdit, orderView, RangeDate},
+  name: 'user',
+  components: {userView, RangeDate},
   data () {
     return {
+      bulletinAdd: {
+        visiable: false
+      },
+      faceView: {
+        visiable: false,
+        data: null
+      },
       advanced: false,
-      orderAdd: {
+      userAdd: {
         visiable: false
       },
-      orderEdit: {
+      userEdit: {
         visiable: false
       },
-      orderView: {
+      userView: {
         visiable: false,
         data: null
       },
@@ -120,6 +145,9 @@ export default {
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
+      fileList: [],
+      previewVisible: false,
+      previewImage: '',
       userList: []
     }
   },
@@ -129,11 +157,8 @@ export default {
     }),
     columns () {
       return [ {
-        title: '订单用户',
-        dataIndex: 'name'
-      }, {
-        title: '车牌号码',
-        dataIndex: 'vehicleNumber',
+        title: '教师编号',
+        dataIndex: 'code',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -142,20 +167,43 @@ export default {
           }
         }
       }, {
-        title: '车辆图片',
-        dataIndex: 'vehicleImages',
+        title: '教师名称',
+        dataIndex: 'name',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '性别',
+        dataIndex: 'sex',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case 1:
+              return <a-tag>男</a-tag>
+            case 2:
+              return <a-tag>女</a-tag>
+            default:
+              return '- -'
+          }
+        }
+      }, {
+        title: '教师头像',
+        dataIndex: 'images',
         customRender: (text, record, index) => {
-          if (!record.vehicleImages) return <a-avatar shape="square" icon="user" />
+          if (!record.images) return <a-avatar shape="square" icon="user" />
           return <a-popover>
             <template slot="content">
-              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.vehicleImages.split(',')[0] } />
+              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
             </template>
-            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.vehicleImages.split(',')[0] } />
+            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
           </a-popover>
         }
       }, {
-        title: '车位名称',
-        dataIndex: 'spaceName',
+        title: '联系方式',
+        dataIndex: 'phone',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -164,8 +212,8 @@ export default {
           }
         }
       }, {
-        title: '驶入时间',
-        dataIndex: 'startDate',
+        title: '邮箱地址',
+        dataIndex: 'email',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -174,46 +222,13 @@ export default {
           }
         }
       }, {
-        title: '驶出时间',
-        dataIndex: 'endDate',
+        title: '创建时间',
+        dataIndex: 'createDate',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
           } else {
             return '- -'
-          }
-        }
-      }, {
-        title: '总时长（分钟）',
-        dataIndex: 'totalTime',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '总费用（元）',
-        dataIndex: 'totalPrice',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '缴费状态',
-        dataIndex: 'status',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case '0':
-              return <a-tag color="red">未缴费</a-tag>
-            case '1':
-              return <a-tag color="green">已缴费</a-tag>
-            default:
-              return '- -'
           }
         }
       }, {
@@ -227,47 +242,44 @@ export default {
     this.fetch()
   },
   methods: {
-    download (row) {
-      this.$message.loading('正在生成', 0)
-      let spread = newSpread('textTable')
-      let sheet = spread.getActiveSheet()
-      sheet.suspendPaint()
-      sheet.setValue(1, 2, row.name)
-      sheet.setValue(1, 4, row.payDate)
-      sheet.setValue(4, 2, row.spaceName)
-      sheet.setValue(4, 3, row.totalTime)
-      sheet.setValue(4, 4, row.price + ' 元')
-      sheet.setValue(5, 4, row.totalPrice + ' 元')
-      sheet.setValue(7, 1, row.content)
-      spread = fixedForm(spread, 'textTable', { title: `${row.payDate}缴费表` })
-      saveExcel(spread, `${row.payDate}缴费表.xlsx`)
-      this.$message.destroy()
+    add () {
+      this.bulletinAdd.visiable = true
     },
-    pay (row) {
-      let data = { outTradeNo: row.code, subject: `${row.spaceName}`, totalAmount: row.totalPrice, body: '' }
-      this.$post('/cos/pay/alipay', data).then((r) => {
-        // console.log(r.data.msg)
-        // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
-        const divForm = document.getElementsByTagName('div')
-        if (divForm.length) {
-          document.body.removeChild(divForm[0])
+    handleBulletinAddClose () {
+      this.bulletinAdd.visiable = false
+    },
+    handleBulletinAddSuccess () {
+      this.bulletinAdd.visiable = false
+      this.$message.success('新增教师成功')
+      this.search()
+    },
+    handleCancel () {
+      this.previewVisible = false
+    },
+    async handlePreview (file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    picHandleChange (info) {
+      console.log(info.file.response)
+      if (info.file.response !== undefined && info.file.response.msg !== undefined) {
+        if (info.file.response.msg === 'success') {
+          this.$message.success('添加照片成功')
+          this.faceView.visiable = false
+          this.fetch()
+        } else {
+          this.$message.error(info.file.response.msg)
         }
-        const div = document.createElement('div')
-        div.innerHTML = r.data.msg // data就是接口返回的form 表单字符串
-        // console.log(div.innerHTML)
-        document.body.appendChild(div)
-        document.forms[0].setAttribute('target', '_self') // 新开窗口跳转
-        document.forms[0].submit()
-      })
+      }
+      this.fileList = info.fileList
     },
-    overOrder (row) {
-      this.$get(`/cos/park-order-info/order/over`, {
-        orderCode: row.code,
-        userId: this.currentUser.userId
-      }).then((r) => {
-        this.$message.success('订单结算成功')
-        this.search()
-      })
+    face (row) {
+      this.fileList = []
+      this.faceView.visiable = true
+      this.faceView.data = row
     },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
@@ -276,33 +288,33 @@ export default {
       this.advanced = !this.advanced
     },
     add () {
-      this.orderAdd.visiable = true
+      this.userAdd.visiable = true
     },
-    handleorderAddClose () {
-      this.orderAdd.visiable = false
+    handleuserAddClose () {
+      this.userAdd.visiable = false
     },
-    handleorderAddSuccess () {
-      this.orderAdd.visiable = false
-      this.$message.success('新增订单成功')
+    handleuserAddSuccess () {
+      this.userAdd.visiable = false
+      this.$message.success('新增会员成功')
       this.search()
     },
     edit (record) {
-      this.$refs.orderEdit.setFormValues(record)
-      this.orderEdit.visiable = true
+      this.$refs.userEdit.setFormValues(record)
+      this.userEdit.visiable = true
     },
-    orderViewOpen (row) {
-      this.orderView.data = row
-      this.orderView.visiable = true
+    userViewOpen (row) {
+      this.userView.data = row
+      this.userView.visiable = true
     },
-    handleorderViewClose () {
-      this.orderView.visiable = false
+    handleuserViewClose () {
+      this.userView.visiable = false
     },
-    handleorderEditClose () {
-      this.orderEdit.visiable = false
+    handleuserEditClose () {
+      this.userEdit.visiable = false
     },
-    handleorderEditSuccess () {
-      this.orderEdit.visiable = false
-      this.$message.success('修改订单成功')
+    handleuserEditSuccess () {
+      this.userEdit.visiable = false
+      this.$message.success('修改会员成功')
       this.search()
     },
     handleDeptChange (value) {
@@ -320,7 +332,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/park-order-info/' + ids).then(() => {
+          that.$delete('/cos/user-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -393,8 +405,8 @@ export default {
       if (params.delFlag === undefined) {
         delete params.delFlag
       }
-      params.userId = this.currentUser.userId
-      this.$get('/cos/park-order-info/page', {
+      params.type = 2
+      this.$get('/cos/user-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data
