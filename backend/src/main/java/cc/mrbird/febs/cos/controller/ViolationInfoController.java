@@ -81,9 +81,10 @@ public class ViolationInfoController {
      */
     @PostMapping
     public R save(ViolationInfo violationInfo) {
+        violationInfo.setCode("VT-" + System.currentTimeMillis());
         violationInfo.setStatus("0");
         if (StrUtil.isNotEmpty(violationInfo.getVehicleNo())) {
-            VehicleInfo vehicleInfo = vehicleInfoService.getOne(Wrappers.<VehicleInfo>lambdaQuery().eq(VehicleInfo::getVehicleNo, violationInfo.getVehicleNo()));
+            VehicleInfo vehicleInfo = vehicleInfoService.getOne(Wrappers.<VehicleInfo>lambdaQuery().eq(VehicleInfo::getVehicleNumber, violationInfo.getVehicleNo()));
             if (vehicleInfo != null) {
                 violationInfo.setUserId(vehicleInfo.getUserId());
             }

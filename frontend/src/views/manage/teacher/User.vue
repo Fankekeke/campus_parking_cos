@@ -31,7 +31,7 @@
     </div>
     <div>
       <div class="operator">
-<!--        <a-button type="primary" ghost @click="add">新增</a-button>-->
+        <a-button type="primary" ghost @click="add">新增</a-button>
 <!--        <a-button @click="batchDelete">删除</a-button>-->
       </div>
       <!-- 表格区域 -->
@@ -96,6 +96,7 @@
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
 import userView from './UserView.vue'
+import UserAdd from './UserAdd'
 import {mapState} from 'vuex'
 import moment from 'moment'
 moment.locale('zh-cn')
@@ -109,7 +110,7 @@ function getBase64 (file) {
 }
 export default {
   name: 'user',
-  components: {userView, RangeDate},
+  components: {userView, UserAdd, RangeDate},
   data () {
     return {
       bulletinAdd: {
@@ -286,9 +287,6 @@ export default {
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
-    },
-    add () {
-      this.userAdd.visiable = true
     },
     handleuserAddClose () {
       this.userAdd.visiable = false

@@ -187,7 +187,7 @@ public class UserInfoController {
         } else if ("3".equals(userInfo.getType())) {
             userInfo.setCode("ST-" + System.currentTimeMillis());
         }
-        userInfo.setCreateDate(DateUtil.formatDate(new Date()));
+        userInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         userService.registUser(userInfo.getCode(), "1234qwer", userInfo);
         return R.ok(true);
     }

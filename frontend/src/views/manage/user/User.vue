@@ -45,7 +45,7 @@
                :scroll="{ x: 900 }"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-          <a-icon type="picture" v-if="record.userImages === null" @click="face(record)" title="照 片" style="margin-right: 15px"></a-icon>
+<!--          <a-icon type="picture" v-if="record.userImages === null" @click="face(record)" title="照 片" style="margin-right: 15px"></a-icon>-->
           <a-icon type="file-search" @click="userViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
         </template>
       </a-table>

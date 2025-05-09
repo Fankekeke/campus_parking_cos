@@ -153,8 +153,18 @@ export default {
           }
         }
       }, {
-        title: '价格/时',
+        title: '访客价格/时',
         dataIndex: 'price',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text + '元'
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '学生价格/时',
+        dataIndex: 'userPrice',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text + '元'

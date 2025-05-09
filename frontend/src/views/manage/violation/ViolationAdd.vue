@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="新增违规" @cancel="onClose" :width="600">
+  <a-modal v-model="show" title="新增违规记录" @cancel="onClose" :width="500">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
@@ -11,18 +11,18 @@
     <a-form :form="form" layout="vertical">
       <a-row :gutter="20">
         <a-col :span="24">
-          <a-form-item label='违规姓名' v-bind="formItemLayout">
+          <a-form-item label='违规车牌' v-bind="formItemLayout">
             <a-input v-decorator="[
-            'name',
-            { rules: [{ required: true, message: '请输入违规姓名!' }] }
+            'vehicleNo',
+            { rules: [{ required: true, message: '请输入违规车牌!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item label='联系方式' v-bind="formItemLayout">
-            <a-input v-decorator="[
-            'phone',
-            { rules: [{ required: true, message: '请输入联系方式!' }] }
+          <a-form-item label='违规内容' v-bind="formItemLayout">
+            <a-textarea :rows="6" v-decorator="[
+            'content',
+             { rules: [{ required: true, message: '请输入违规内容!' }] }
             ]"/>
           </a-form-item>
         </a-col>
@@ -126,7 +126,6 @@ export default {
       })
       this.form.validateFields((err, values) => {
         values.images = images.length > 0 ? images.join(',') : null
-        values.type = 3
         if (!err) {
           this.loading = true
           this.$post('/cos/violation-info', {

@@ -7,15 +7,15 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="违规编号"
+                label="车牌号码"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.code"/>
+                <a-input v-model="queryParams.vehicleNo"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="违规名称"
+                label="用户名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -32,7 +32,7 @@
     <div>
       <div class="operator">
         <a-button type="primary" ghost @click="add">新增</a-button>
-<!--        <a-button @click="batchDelete">删除</a-button>-->
+        <a-button @click="batchDelete">删除</a-button>
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -45,45 +45,22 @@
                :scroll="{ x: 900 }"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-<!--          <a-icon type="picture" v-if="record.userImages === null" @click="face(record)" title="照 片" style="margin-right: 15px"></a-icon>-->
-          <a-icon type="file-search" @click="userViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
+          <a-icon type="file-search" @click="userViewOpen(record)" title="详 情"></a-icon>
+          <a-icon v-if="record.status == 0" type="alert" theme="twoTone" @click="userViewEdit(record)" title="处 理" style="margin-left: 15px"></a-icon>
         </template>
       </a-table>
     </div>
-    <a-modal v-model="faceView.visiable" title="上传人脸照片">
-      <template slot="footer">
-        <a-button key="back" @click="faceView.visiable = false">
-          取消
-        </a-button>
-      </template>
-      <div style="height: 120px">
-        <a-upload
-          v-if="faceView.visiable"
-          name="avatar"
-          action="http://127.0.0.1:9527/cos/face/registered/"
-          list-type="picture-card"
-          :data="{'name': faceView.data.name, 'ownerId': faceView.data.id}"
-          :file-list="fileList"
-          @preview="handlePreview"
-          @change="picHandleChange"
-        >
-          <div v-if="fileList.length < 1">
-            <a-icon type="plus" />
-            <div class="ant-upload-text">
-              Upload
-            </div>
-          </div>
-        </a-upload>
-      </div>
-      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-        <img alt="example" style="width: 100%" :src="previewImage" />
-      </a-modal>
-    </a-modal>
     <user-view
       @close="handleuserViewClose"
       :userShow="userView.visiable"
       :userData="userView.data">
     </user-view>
+    <user-edit
+      @close="handleuserEditClose"
+      @success="handleuserEditSuccess"
+      :userShow="userEdit.visiable"
+      :userData="userEdit.data">
+    </user-edit>
     <user-add
       v-if="bulletinAdd.visiable"
       @close="handleBulletinAddClose"
@@ -97,6 +74,7 @@
 import RangeDate from '@/components/datetime/RangeDate'
 import userView from './ViolationView.vue'
 import UserAdd from './ViolationAdd.vue'
+import UserEdit from './ViolationEdit.vue'
 import {mapState} from 'vuex'
 import moment from 'moment'
 moment.locale('zh-cn')
@@ -110,7 +88,7 @@ function getBase64 (file) {
 }
 export default {
   name: 'user',
-  components: {userView, UserAdd, RangeDate},
+  components: {userView, UserAdd, UserEdit, RangeDate},
   data () {
     return {
       bulletinAdd: {
@@ -159,6 +137,7 @@ export default {
     columns () {
       return [ {
         title: '违规编号',
+        ellipsis: true,
         dataIndex: 'code',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -168,8 +147,9 @@ export default {
           }
         }
       }, {
-        title: '违规名称',
-        dataIndex: 'name',
+        title: '车牌号',
+        dataIndex: 'vehicleNo',
+        ellipsis: true,
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -178,20 +158,20 @@ export default {
           }
         }
       }, {
-        title: '性别',
-        dataIndex: 'sex',
+        title: '处理状态',
+        dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case 1:
-              return <a-tag>男</a-tag>
-            case 2:
-              return <a-tag>女</a-tag>
+            case '0':
+              return <a-tag color="#f50">未处理</a-tag>
+            case '1':
+              return <a-tag color="#87d068">已处理</a-tag>
             default:
               return '- -'
           }
         }
       }, {
-        title: '违规头像',
+        title: '图片',
         dataIndex: 'images',
         customRender: (text, record, index) => {
           if (!record.images) return <a-avatar shape="square" icon="user" />
@@ -203,8 +183,8 @@ export default {
           </a-popover>
         }
       }, {
-        title: '联系方式',
-        dataIndex: 'phone',
+        title: '所属用户',
+        dataIndex: 'name',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -213,8 +193,9 @@ export default {
           }
         }
       }, {
-        title: '邮箱地址',
-        dataIndex: 'email',
+        title: '违规内容',
+        dataIndex: 'content',
+        ellipsis: true,
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -225,6 +206,7 @@ export default {
       }, {
         title: '创建时间',
         dataIndex: 'createDate',
+        ellipsis: true,
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -300,6 +282,10 @@ export default {
       this.$refs.userEdit.setFormValues(record)
       this.userEdit.visiable = true
     },
+    userViewEdit (row) {
+      this.userEdit.data = row
+      this.userEdit.visiable = true
+    },
     userViewOpen (row) {
       this.userView.data = row
       this.userView.visiable = true
@@ -312,7 +298,7 @@ export default {
     },
     handleuserEditSuccess () {
       this.userEdit.visiable = false
-      this.$message.success('修改会员成功')
+      this.$message.success('修改成功')
       this.search()
     },
     handleDeptChange (value) {

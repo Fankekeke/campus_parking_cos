@@ -27,7 +27,7 @@
               <span style="font-size: 20px;font-family: SimHei">{{ userInfo.name }}</span>
               <span style="font-size: 14px;font-family: SimHei">{{ userInfo.code }}</span>
             </div>
-            <div style="float: left;margin-left: 20px;margin-top: 8px">
+            <div style="clear: left;float: left;margin-left: 20px;margin-top: 8px">
               <span style="font-size: 14px;font-family: SimHei">电话：{{ userInfo.phone == null ? '- -' : userInfo.phone }}</span>
               <br/>
               <br/>
@@ -55,6 +55,8 @@
                   <span style="margin-left: 15px;color: orange" v-if="item.status == -1">预约中</span>
                   <span style="margin-left: 15px;color: green" v-if="item.status == 0">空闲</span>
                   <span style="margin-left: 15px;color: red" v-if="item.status == 1">停车中</span>
+                  <br/>
+                  <br/>
                   <a style="text-align: right;margin-left: 10px" v-if="item.status == 0" @click="showModal(item)"><a-icon type="paper-clip" />预约</a>
                 </span>
               </span>
@@ -70,39 +72,42 @@
       >
         <a-form :form="form" layout="vertical">
           <a-row :gutter="20">
-            <a-col :span="24">
-              <p style="text-align: center;font-size: 16px;font-weight: 600">人脸认证</p>
-            </a-col>
-            <a-col :span="24">
-              <div style="height: 350px">
-                <div class="camera_outer">
-                  <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>
-                  <canvas style="display:none;" id="canvasCamera" :width="videoWidth" :height="videoHeight" ></canvas>
-                  <div v-if="imgSrc" class="img_bg_camera">
-                    <img :src="imgSrc" alt="" class="tx_img">
-                  </div>
-                  <div style="margin-top: 10px">
-                    <a-button
-                      size="small"
-                      type="primary"
-                      @click.stop.prevent="getCompetence">打开摄像头
-                    </a-button>
-                    <a-button
-                      size="small"
-                      type="primary"
-                      @click.stop.prevent="stopNavigator">关闭摄像头
-                    </a-button>
-                    <a-button
-                      size="small"
-                      type="primary"
-                      @click.stop.prevent="setImage">识别
-                    </a-button>
-                  </div>
-                </div>
-              </div>
-            </a-col>
+<!--            <a-col :span="24">-->
+<!--              <p style="text-align: center;font-size: 16px;font-weight: 600">人脸认证</p>-->
+<!--            </a-col>-->
+<!--            <a-col :span="24">-->
+<!--              <div style="height: 350px">-->
+<!--                <div class="camera_outer">-->
+<!--                  <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>-->
+<!--                  <canvas style="display:none;" id="canvasCamera" :width="videoWidth" :height="videoHeight" ></canvas>-->
+<!--                  <div v-if="imgSrc" class="img_bg_camera">-->
+<!--                    <img :src="imgSrc" alt="" class="tx_img">-->
+<!--                  </div>-->
+<!--                  <div style="margin-top: 10px">-->
+<!--                    <a-button-->
+<!--                      size="small"-->
+<!--                      type="primary"-->
+<!--                      @click.stop.prevent="getCompetence">打开摄像头-->
+<!--                    </a-button>-->
+<!--                    <a-button-->
+<!--                      size="small"-->
+<!--                      type="primary"-->
+<!--                      @click.stop.prevent="stopNavigator">关闭摄像头-->
+<!--                    </a-button>-->
+<!--                    <a-button-->
+<!--                      size="small"-->
+<!--                      type="primary"-->
+<!--                      @click.stop.prevent="setImage">识别-->
+<!--                    </a-button>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </a-col>-->
             <a-col :span="24" v-if="faceVerification">
-              <a-form-item label='车辆信息' v-bind="formItemLayout">
+              <p v-if="vehicleList.length === 0">
+                <a-alert message="请先添加车辆" type="info" />
+              </p>
+              <a-form-item v-else label='车辆信息' v-bind="formItemLayout">
                 <a-radio-group button-style="solid" v-decorator="[
                     'vehicleId',
                     {rules: [{ required: true, message: '请选择车辆' }]}
@@ -145,13 +150,14 @@ export default {
       faceView: {
         visiable: false
       },
+      newsContent: '',
       videoWidth: 470,
       videoHeight: 300,
       imgSrc: '',
       thisCancas: null,
       thisContext: null,
       thisVideo: null,
-      faceVerification: false
+      faceVerification: true
     }
   },
   computed: {
@@ -267,7 +273,7 @@ export default {
     handleCancel (e) {
       console.log('Clicked cancel button')
       this.faceVerification = false
-      this.thisVideo.srcObject.getTracks()[0].stop()
+      // this.thisVideo.srcObject.getTracks()[0].stop()
       this.visible = false
     },
     selectVehicleByUserId () {
@@ -276,6 +282,10 @@ export default {
       })
     },
     reserveSpace () {
+      if (!this.spaceInfo.id) {
+        this.$message.warning('请选择车位')
+        return false
+      }
       this.form.validateFields((err, values) => {
         if (!err) {
           values.spaceId = this.spaceInfo.id

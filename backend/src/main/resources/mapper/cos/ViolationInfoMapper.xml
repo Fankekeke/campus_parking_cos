@@ -2,4 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.cos.dao.ViolationInfoMapper">
 
+    <!-- 分页获取违规信息 -->
+    <select id="queryViolationPage" resultType="java.util.LinkedHashMap">
+        select
+        vi.id,
+        vi.code,
+        vi.status,
+        vi.order_id,
+        vi.vehicle_no,
+        vi.user_id,
+        vi.content,
+        vi.create_date,
+        vi.images,
+        vi.fix_content,
+        vi2.vehicle_number,
+        vi2.images as vehicleImages,
+        vi2.vehicle_color,
+        ui.code as userCode,
+        ui.name,
+        ui.images as userImages,
+        ui.phone,
+        ui.email
+        from
+        violation_info vi
+        left join vehicle_info vi2 on (vi2.vehicle_number = vi.vehicle_no)
+        left join user_info ui on (ui.id = vi.user_id)
+        where 1 = 1
+        <if test="violationInfo.vehicleNo != null and violationInfo.vehicleNo != ''">
+            AND vi2.vehicle_number LIKE CONCAT('%',#{violationInfo.vehicleNo},'%')
+        </if>
+        <if test="violationInfo.name != null and violationInfo.name != ''">
+            AND ui.name LIKE CONCAT('%',#{violationInfo.name},'%')
+        </if>
+        order by vi.create_date desc
+
+    </select>
 </mapper>

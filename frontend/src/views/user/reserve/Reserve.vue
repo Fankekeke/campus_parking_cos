@@ -54,7 +54,7 @@
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
           <a-icon type="file-search" @click="reserveViewOpen(record)" title="详 情"></a-icon>
-          <a-icon type="control" theme="twoTone" @click="editStatus(record)" title="取 消" style="margin-left: 15px" v-if="record.status == 1"></a-icon>
+          <a-icon type="close-square" theme="twoTone" @click="editStatus(record)" title="取 消" style="margin-left: 15px" v-if="record.status == 1"></a-icon>
         </template>
       </a-table>
     </div>
@@ -180,6 +180,7 @@ export default {
       }, {
         title: '预约开始时间',
         dataIndex: 'startDate',
+        ellipsis: true,
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -190,6 +191,7 @@ export default {
       }, {
         title: '预约结束时间',
         dataIndex: 'endDate',
+        ellipsis: true,
         customRender: (text, row, index) => {
           if (text !== null) {
             return text

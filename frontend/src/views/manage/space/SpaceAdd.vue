@@ -19,10 +19,18 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='价格' v-bind="formItemLayout">
+          <a-form-item label='访客价格' v-bind="formItemLayout">
             <a-input-number :min="1" style="width: 100%" v-decorator="[
             'price',
-            { spaces: [{ required: true, message: '请输入价格!' }] }
+            { spaces: [{ required: true, message: '请输入访客价格!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label='学生价格' v-bind="formItemLayout">
+            <a-input-number :min="1" style="width: 100%" v-decorator="[
+            'userPrice',
+            { spaces: [{ required: true, message: '请输入学生价格!' }] }
             ]"/>
           </a-form-item>
         </a-col>
