@@ -14,30 +14,20 @@
         <a-col :span="16" style="height: 100%;">
           <div id="areas" style="width: 100%;height: 100vh;box-shadow: 3px 3px 3px rgba(0, 0, 0, .2);background:#ec9e3c;color:#fff"></div>
         </a-col>
-        <a-col :span="8" style="height: 100vh;color:#fff;overflow-y: auto">
+        <a-col :span="6" style="height: 100vh;color:#fff;overflow-y: auto">
           <div style="padding: 20px;margin: 0 auto">
-            <a-row :gutter="15" style="width: 100%">
-              <a-col :span="12">
-                <a-input-search v-model="startPoint.address" placeholder="选择起点" style="margin-top: 20px;width: 100%" @search="onSearch0"/>
-              </a-col>
-              <a-col :span="12">
-                <a-input-search v-model="endPoint.address" placeholder="选择终点" style="margin-top: 20px;width: 100%" @search="onSearch1"/>
-              </a-col>
-              <a-col :span="24">
-                <a-button style="margin-top: 20px;width: 100%" @click="navigation()" type="primary">导航</a-button>
-              </a-col>
-            </a-row>
+            <a-input-search v-model="local" placeholder="选择区域" style="margin-top: 20px;width: 100%" @search="onSearch"/>
             <a-row :gutter="15" style="width: 100%">
               <a-col :span="12">
                 <div v-show="cardShow" style="margin-top: 20px">
-                  <a-card hoverable style="width: 100%;margin-bottom: 15px" v-for="local in localData" :key="local.uid" @click="checkPoint(local)">
+                  <a-card hoverable style="width: 100%;margin-bottom: 15px" v-for="local in localData" :key="local.uid" @click="navigation(local)">
                     <template class="ant-card-actions" slot="actions">
                     </template>
                     <a-card-meta :title="local.title" :description="local.address"></a-card-meta>
                   </a-card>
                 </div>
               </a-col>
-              <a-col :span="24">
+              <a-col :span="12">
                 <div style="font-size: 12px;font-family: SimHei;margin-top: 20px" v-if="roadData.length !== 0">
                   <a-row>
                     <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">道路导航</span></a-col>
@@ -72,20 +62,9 @@ export default {
       mapId: 'areass',
       cardShow: false,
       loading: false,
-      startPoint: {
-        lng: null,
-        lat: null,
-        address: ''
-      },
-      endPoint: {
-        lng: null,
-        lat: null,
-        address: ''
-      },
       local: '',
       roadData: [],
-      localData: [],
-      checkType: 0
+      localData: []
     }
   },
   props: {
@@ -112,30 +91,15 @@ export default {
     }, 500)
   },
   methods: {
-    checkPoint (data) {
-      if (this.checkType == 0) {
-        this.startPoint.lng = data.point.lng
-        this.startPoint.lat = data.point.lat
-      }
-      if (this.checkType == 1) {
-        this.endPoint.lng = data.point.lng
-        this.endPoint.lat = data.point.lat
-      }
-      this.cardShow = false
-      baiduMap.clearOverlays()
-    },
     navigation (data) {
-      if (this.startPoint.lng && this.endPoint.lng && this.startPoint.lat && this.endPoint.lat) {
-        baiduMap.clearOverlays()
-        baiduMap.rMap().enableScrollWheelZoom(true)
-        // eslint-disable-next-line no-undef
-        let driving = new BMap.DrivingRoute(baiduMap.rMap(), {renderOptions: {map: baiduMap.rMap(), autoViewport: true}})
-        // eslint-disable-next-line no-undef
-        driving.search(new BMap.Point(this.startPoint.lng, this.startPoint.lat), new BMap.Point(this.endPoint.lng, this.endPoint.lat))
-        this.getRoadData(data)
-      } else {
-        this.$message.error('请选择起点和终点')
-      }
+      console.log(data)
+      baiduMap.clearOverlays()
+      baiduMap.rMap().enableScrollWheelZoom(true)
+      // eslint-disable-next-line no-undef
+      let driving = new BMap.DrivingRoute(baiduMap.rMap(), {renderOptions: {map: baiduMap.rMap(), autoViewport: true}})
+      // eslint-disable-next-line no-undef
+      driving.search(new BMap.Point(this.nowPoint.lng, this.nowPoint.lat), new BMap.Point(data.point.lng, data.point.lat))
+      this.getRoadData(data)
     },
     getRoadData (data) {
       let options = {
@@ -163,8 +127,8 @@ export default {
       // eslint-disable-next-line no-undef
       let driving = new BMap.DrivingRoute(baiduMap.rMap(), options)
       // eslint-disable-next-line no-undef
-      let start = new BMap.Point(this.startPoint.lng, this.startPoint.lat)
-      let end = new BMap.Point(this.endPoint.lng, this.endPoint.lat)
+      let start = new BMap.Point(this.nowPoint.lng, this.nowPoint.lat)
+      let end = new BMap.Point(data.point.lng, data.point.lat)
 
       // eslint-disable-next-line no-undef
       driving.search(start, end)
@@ -191,8 +155,7 @@ export default {
     addPoint (point) {
       this.localPoint = point
     },
-    onSearch0 () {
-      this.checkType = 0
+    onSearch () {
       let localData = []
       var options = {
         onSearchComplete: (results) => {
@@ -217,35 +180,7 @@ export default {
       }
       // eslint-disable-next-line no-undef
       var local = new BMap.LocalSearch(baiduMap.rMap(), options)
-      local.search(this.startPoint.address)
-    },
-    onSearch1 () {
-      this.checkType = 1
-      let localData = []
-      var options = {
-        onSearchComplete: (results) => {
-          // 判断状态是否正确
-          // eslint-disable-next-line no-undef,eqeqeq
-          if (local.getStatus() == BMAP_STATUS_SUCCESS) {
-            for (var i = 0; i < results.getCurrentNumPois(); i++) {
-              if (i === 0) {
-                setTimeout(() => {
-                  baiduMap.findPoint(results.getPoi(0).point, 15)
-                }, 10)
-              }
-              localData.push(results.getPoi(i))
-              if (results.getPoi(i).point !== undefined) {
-                baiduMap.localPointAdd(results.getPoi(i))
-              }
-            }
-            this.localData = localData
-            this.cardShow = true
-          }
-        }
-      }
-      // eslint-disable-next-line no-undef
-      var local = new BMap.LocalSearch(baiduMap.rMap(), options)
-      local.search(this.endPoint.address)
+      local.search(this.local)
     }
   }
 }
