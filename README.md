@@ -37,10 +37,18 @@ WebStorm OR VScode 编译器 [https://www.jianshu.com/p/d63b5bae9dff]
 admin
 1234qwer
 
+[员工]
+STF-fank
+1234qwer
+
+[用户]
+fank
+1234qwer
+
 ###### 管理员：
 系统公告、会员管理、用户消息、订单管理、车位预约、价格规则、车位管理、车位状态、访客管理、车辆管理、数据统计、月份统计、车位实时状态、会员订单、员工管理、教师管理、学生管理、违规记录。
 
-###### 用户：
+###### 用户/学生/教师：
 账户注册登录、密码修改、个人信息、我的车辆、车位预约、我的订单、我的消息、在线缴费、我的会员记录，会员购买、路线导航。
 
 ###### 员工：
@@ -51,7 +59,17 @@ admin
 
 |  |  |
 |---------------------|---------------------|
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/work/936e9baf53eb9a217af4f89c616dc19.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/8e11c32e-7908-4c53-9fff-d1cfe9bbf22c.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/3245bf23-d85a-49a8-a91e-1375a5914415.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/7ced6c6e-1d1e-4217-8129-ceaed3780884.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/1374c969-7541-42f2-8ab7-258b769bfbe3.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/5ba2228b-68d5-41ad-85ee-0e74805401cd.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/875d85e9-b73f-496b-8dc8-861bc5c0a090.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/fee69e26-db0a-478b-8e8d-6ed319b07571.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/554fe99d-831e-4622-98ca-003e691e7f1d.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/e1504a68-0091-47d9-8883-bb258db29c74.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/234d5534-3367-4ed6-a24e-dba534961e88.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/d036cea2-d2b6-4fdc-8709-a3b1c9606391.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/98faacd2-58ac-4a91-8035-9d6a05839ed5.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/cc3ebaf6-e68f-4220-b4cd-7d89c8f7ef16.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/48f41391-1186-4303-be2a-37a16e7cf8ce.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/c005dd2a-5c05-4bda-a889-008259384129.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/028a0fc7-bf35-443a-9c3c-c9b610657c9d.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/bf72c789-3cc4-4e6f-839f-c1f6b02ddd19.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/27c2201e-68e3-493a-b04f-429f81299e88.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/410267c8-2831-4246-973c-92e20ce4e78a.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/9feb0a4b-1005-484a-8709-8a89765c2b9c.png) |
+| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/9314f815-da63-4f5c-98bd-d4aeb75a2647.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/work/936e9baf53eb9a217af4f89c616dc19.png) |
 
 #### 演示视频
 
