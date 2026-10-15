@@ -1,17 +1,17 @@
-### 基于SpringBoot + Vue的校园停车场计费系统.
+![](https://img.shields.io/badge/License-MIT-blue.svg)
 
-校园停车场计费系统、高校智慧停车、车位预约缴费、无人值守停车系统、校园车牌识别计费、停车管理系统
+![](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
 
-###### 管理员：
-系统公告、会员管理、用户消息、订单管理、车位预约、价格规则、车位管理、车位状态、访客管理、车辆管理、数据统计、月份统计、车位实时状态、会员订单、员工管理、教师管理、学生管理、违规记录。
+![](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-###### 用户/学生/教师：
-账户注册登录、密码修改、个人信息、我的车辆、车位预约、我的订单、我的消息、在线缴费、我的会员记录，会员购买、路线导航。
+# 基于 SpringBoot + Vue 的校园停车场计费系统 (Campus Parking Lot Billing System)
 
-###### 员工：
-账户注册登录、密码修改、个人信息 、订单管理 、车位预约 、车位状态。
+车位预约 · 在线缴费 · 会员管理 · 实时车位 · 计费规则 · 数据统计 · 多角色协同
+
+本项目是一套面向高校场景的校园停车场计费管理系统，采用前后端分离架构，覆盖管理员、用户（学生/教师）、员工三类角色。系统围绕“车位管理、车位预约、车辆进出、在线缴费、会员管理、价格规则、违规记录、数据统计”等核心业务设计，支持用户在线查看实时车位、预约车位、绑定车辆、支付宝在线缴费与会员购买，员工协助管理订单与车位状态，管理员完成车位资源管理、价格规则配置、用户与车辆管理、会员订单管理、违规记录处理及多维度数据统计分析，适用于高校保卫处、后勤管理部门、校园停车场运营及师生停车服务场景。
 
 #### 安装环境
+️**注意**：请确保您的开发环境已安装以下依赖。
 
 JAVA 环境 
 
@@ -19,24 +19,159 @@ Node.js环境 [https://nodejs.org/en/] 选择14.17
 
 Yarn 打开cmd， 输入npm install -g yarn !!!必须安装完毕nodejs
 
-Mysql 数据库 [https://blog.csdn.net/qq_40303031/article/details/88935262] 一定要把账户和密码记住
+Mysql 数据库 一定要把账户和密码记住
 
 redis
 
-Idea 编译器 [https://blog.csdn.net/weixin_44505194/article/details/104452880]
+Idea 编译器
 
-WebStorm OR VScode 编译器 [https://www.jianshu.com/p/d63b5bae9dff]
+WebStorm OR VScode 编译器
 
 #### 采用技术及功能
 
 后端：SpringBoot、MybatisPlus、MySQL、Redis、
 前端：Vue、Apex、Antd、Axios
 
-平台前端：vue(框架) + vuex(全局缓存) + rue-router(路由) + axios(请求插件) + apex(图表)  + antd-ui(ui组件)
+平台前端：vue(框架) + vuex(全局缓存) + rue-router(路由) + axios(请求插件) + apex(图表)  + antd-ui(ui组件) + 百度地图 API + 微信小程序
 
 平台后台：springboot(框架) + redis(缓存中间件) + shiro(权限中间件) + mybatisplus(orm) + restful风格接口 + mysql(数据库)
 
 开发环境：windows10 or windows7 ， vscode or webstorm ， idea + lambok
+
+---
+
+## 核心特性
+
+- **多角色权限管理**：区分管理员、用户（学生/教师）、员工三类角色，实现不同权限隔离与功能访问控制。
+- **车位实时状态可视化**：以区域、编号、状态维度展示车位空闲、占用、预约、维护等状态，支持实时刷新。
+- **车位预约与冲突检测**：用户可提前预约车位，系统自动检测时间冲突、车位占用与预约超时释放。
+- **灵活计费规则引擎**：支持按小时、按天、按月、分时段、分车型、分区域配置价格规则，支持免费时长与封顶金额。
+- **支付宝在线缴费**：用户停车出场后自动生成订单，支持支付宝扫码或在线支付，支付状态实时同步。
+- **会员体系管理**：支持月卡、季卡、年卡等会员购买与续费，会员车辆可享受优惠费率或免费停车。
+- **车辆与访客管理**：支持用户绑定多辆常用车辆，访客车辆可登记入场并纳入临时计费管理。
+- **违规记录管理**：记录超时占位、违规停车、未缴费离场、黑名单车辆等行为，支持违规处理与提醒。
+- **多维度数据统计**：支持月份统计、车位利用率、收入趋势、车辆分布、会员订单等可视化报表。
+- **消息通知服务**：支持系统公告、预约成功、缴费提醒、会员到期、违规通知等多端消息推送。
+---
+
+## 适用场景
+
+- 高校校园停车场日常运营管理
+- 师生停车预约与在线缴费服务
+- 校园会员停车（月卡/季卡/年卡）管理
+- 访客车辆临时停车登记与计费
+- 停车场车位实时状态监控与调度
+- 校园停车收入统计与运营分析
+- 违规停车记录与黑名单管理
+---
+
+## 功能模块概览
+
+### 管理员端
+
+管理员端负责校园停车场整体运营、资源配置、规则配置、用户管理与数据统计分析：
+
+**系统基础管理**
+
+- **系统公告**：发布停车场运营公告、收费标准调整、节假日安排、维护通知与安全提示。
+- **员工管理**：管理停车场员工账号、角色权限、值班安排与操作日志。
+- **教师管理**：维护教师用户信息、车辆绑定、会员资格与停车权限。
+- **学生管理**：管理学生用户账号、实名认证、车辆登记与违规记录。
+- **用户消息**：查看与推送系统消息、缴费提醒、预约通知、会员到期提醒。
+
+**车位与车辆管理**
+
+- **车位管理**：维护停车场区域、车位编号、车位类型（普通/新能源/无障碍/教职工专用）、容量与状态。
+- **车位状态**：实时查看各车位空闲、占用、预约、维护状态，支持手动调整与异常处理。
+- **车位实时状态**：通过 WebSocket 或定时刷新机制，实时展示全场车位占用率与空余数量。
+- **车辆管理**：查看全校登记车辆信息，包括车牌号、车主、车型、颜色、绑定用户与入场记录。
+- **访客管理**：登记外来访客车辆信息，设置临时停车权限与计费规则。
+
+**计费与订单管理**
+
+- **价格规则**：配置不同区域、时段、车型的计费单价、免费时长、封顶金额、会员折扣与节假日规则。
+- **订单管理**：查看所有停车订单，包括入场时间、出场时间、停车时长、计费金额、支付状态。
+- **会员订单**：查看会员购买与续费订单，管理月卡、季卡、年卡的生效与到期状态。
+
+**会员与违规管理**
+
+- **会员管理**：管理会员等级、会员权益、会员有效期与自动续费设置。
+- **违规记录**：记录超时占位、未缴费离场、违规停车、黑名单车辆等行为，支持警告、罚款与禁入处理。
+
+**数据统计与可视化**
+
+- **数据统计**：展示当日/当月停车次数、收入总额、车位利用率、会员数量等核心指标。
+- **月份统计**：按月度统计停车收入、车位周转率、高峰时段、车辆类型分布与缴费方式占比。
+
+### 用户端（学生/教师）
+
+用户端面向在校学生与教师，提供车位查询、预约、缴费、会员购买与个人停车管理：
+
+**账户与个人信息**
+
+- **账户注册登录**：支持手机号或学号/工号注册登录，密码加密存储。
+- **密码修改**：支持在线修改登录密码，保障账户安全。
+- **个人信息**：维护姓名、学号/工号、学院/部门、联系方式、头像等信息。
+
+**车辆与车位服务**
+
+- **我的车辆**：绑定个人常用车辆，支持添加、编辑、删除与设置默认车辆。
+- **车位预约**：查看实时车位状态，选择区域与车位进行预约，支持预约时间选择与取消。
+- **路线导航**：提供从当前位置到目标车位或停车场入口的路线指引。
+
+**订单与缴费**
+
+- **我的订单**：查看历史停车订单，包括入场时间、出场时间、停车时长、计费明细与支付状态。
+- **支付宝在线缴费**：出场后自动生成缴费订单，支持支付宝扫码或在线支付完成缴费。
+
+**会员服务**
+
+- **我的会员记录**：查看会员购买历史、生效时间、到期时间与使用记录。
+- **会员购买**：在线购买月卡、季卡、年卡等会员服务，享受停车优惠或免费停车权益。
+
+**消息通知**
+
+- **我的消息**：接收预约成功、缴费提醒、会员到期、违规通知、系统公告等消息。
+
+### 员工端
+
+员工端面向停车场现场工作人员，协助完成订单管理与车位状态维护：
+
+**账户管理**
+
+- **账户注册登录**：员工账号由管理员分配，支持登录与密码修改。
+- **个人信息**：维护员工姓名、工号、联系方式与岗位信息。
+
+**业务管理**
+
+- **订单管理**：查看当前在场车辆订单，协助处理缴费异常、手动出场与订单补录。
+- **车位预约**：查看用户预约记录，协助引导车辆至预约车位。
+- **车位状态**：实时更新车位占用、空闲、维护状态，处理异常占位与现场调度。
+
+---
+
+## 项目结构
+
+```text
+pharmacy-dispensing-system/
+├── backend/            # 后端 API 服务
+│   ├── src/
+│   │   ├── controllers/  # 控制器
+│   │   ├── models/       # 数据模型
+│   │   ├── routes/       # 路由
+│   │   └── services/     # 业务逻辑
+│   └── package.json
+├── frontend/           # 前端 Web 应用
+│   ├── src/
+│   │   ├── views/      # 页面视图
+│   │   ├── components/ # 公共组件
+│   │   └── store/      # 状态管理
+│   └── package.json
+├── docs/               # 项目文档与 API 接口说明
+├── LICENSE
+└── README.md
+```
+---
 
 
 #### 前台启动方式
@@ -46,32 +181,34 @@ WebStorm OR VScode 编译器 [https://www.jianshu.com/p/d63b5bae9dff]
 #### 默认后台账户密码
 [管理员]
 admin
-1234qwer
+123456
 
 [员工]
-STF-fank
-1234qwer
-
-[用户]
 fank
-1234qwer
+123456
+
+[学生]
+fkkk
+123456
+
+[教师]
+teacher
+123456
 
 #### 项目截图
-暂无
-
 |  |  |
 |---------------------|---------------------|
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/8e11c32e-7908-4c53-9fff-d1cfe9bbf22c.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/3245bf23-d85a-49a8-a91e-1375a5914415.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/7ced6c6e-1d1e-4217-8129-ceaed3780884.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/1374c969-7541-42f2-8ab7-258b769bfbe3.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/5ba2228b-68d5-41ad-85ee-0e74805401cd.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/875d85e9-b73f-496b-8dc8-861bc5c0a090.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/fee69e26-db0a-478b-8e8d-6ed319b07571.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/554fe99d-831e-4622-98ca-003e691e7f1d.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/e1504a68-0091-47d9-8883-bb258db29c74.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/234d5534-3367-4ed6-a24e-dba534961e88.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/d036cea2-d2b6-4fdc-8709-a3b1c9606391.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/98faacd2-58ac-4a91-8035-9d6a05839ed5.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/cc3ebaf6-e68f-4220-b4cd-7d89c8f7ef16.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/48f41391-1186-4303-be2a-37a16e7cf8ce.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/c005dd2a-5c05-4bda-a889-008259384129.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/028a0fc7-bf35-443a-9c3c-c9b610657c9d.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/bf72c789-3cc4-4e6f-839f-c1f6b02ddd19.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/27c2201e-68e3-493a-b04f-429f81299e88.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/410267c8-2831-4246-973c-92e20ce4e78a.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/9feb0a4b-1005-484a-8709-8a89765c2b9c.png) |
-| ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/9314f815-da63-4f5c-98bd-d4aeb75a2647.png) | ![](https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/work/936e9baf53eb9a217af4f89c616dc19.png) |
+| ![](./assets/image%20(1).png) | ![](./assets/image%20(2).png) |
+| ![](./assets/image%20(3).png) | ![](./assets/image%20(4).png) |
+| ![](./assets/image%20(5).png) | ![](./assets/image%20(6).png) |
+| ![](./assets/image%20(7).png) | ![](./assets/image%20(8).png) |
+| ![](./assets/image%20(9).png) | ![](./assets/image%20(10).png) |
+| ![](./assets/image%20(11).png) | ![](./assets/image%20(12).png) |
+| ![](./assets/image%20(13).png) | ![](./assets/image%20(14).png) |
+| ![](./assets/image%20(15).png) | ![](./assets/image%20(16).png) |
+| ![](./assets/image%20(17).png) | ![](./assets/image%20(18).png) |
+| ![](./assets/image%20(19).png) | ![](./assets/image%20(20).png) | 
+| ![](./assets/image%20(21).png) | | 
 
 #### 演示视频
 
@@ -89,7 +226,10 @@ WeChat: `Storm_Berserker`
 
 > 项目部署调试不好包退！功能逻辑没讲明白包退！
 
+<div align=center><img align="center" src="./assets/product_word.png" alt="fankekeke" /></div>
+
 #### 其它资源
+[2026年-答辩顺利通过-客户评价🀄](https://berserker287.github.io/2026/06/29/2026%E5%B9%B4%E7%AD%94%E8%BE%A9%E9%A1%BA%E5%88%A9%E9%80%9A%E8%BF%87/)
 
 [2025年-答辩顺利通过-客户评价🍜](https://berserker287.github.io/2025/06/18/2025%E5%B9%B4%E7%AD%94%E8%BE%A9%E9%A1%BA%E5%88%A9%E9%80%9A%E8%BF%87/)
 
@@ -113,4 +253,8 @@ WeChat: `Storm_Berserker`
 
 More info: [悲伤的橘子树](https://berserker287.github.io/)
 
-<p><img align="center" src="https://fank-bucket-oss.oss-cn-beijing.aliyuncs.com/img/%E5%90%88%E4%BD%9C%E7%89%A9%E6%96%99%E6%A0%B7%E5%BC%8F%20(3).png" alt="fankekeke" /></p>
+<div align="center"><img align="center" src="./assets/chat_qr_code.png" alt="fankekeke" width=250 /></div>
+
+<p><img align="center" src="./assets/wechat_group.png" alt="fankekeke" /></p>
+
+**感谢查看**
